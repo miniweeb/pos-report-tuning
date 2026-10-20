@@ -1,0 +1,6 @@
+.env
+*.ini
+!config.example.ini
+__pycache__/
+*.log
+output/
