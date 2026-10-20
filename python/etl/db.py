@@ -1,4 +1,4 @@
-"""Ket noi Oracle. Thong tin lay tu bien moi truong"""
+"""Ket noi Oracle. Thong tin lay tu bien moi truong, KHONG commit mat khau."""
 import os
 import oracledb
 

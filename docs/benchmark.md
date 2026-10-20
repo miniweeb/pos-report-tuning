@@ -1,4 +1,4 @@
-# So sanh hieu nang (ky 01/09-30/09/2026, 2.588.697 dong)
+# So sanh hieu nang (ky 01/09-27/09/2026, 2.588.697 dong)
 
 | Chi so | V0 | V1 | Cai thien |
 |---|---|---|---|
@@ -8,4 +8,6 @@
 | Partition W4_DOC_FULL doc | 32/32 | 1/32 | pruning |
 | Buoc tinh phi (Python) | 2h 05m | 48s | -99% |
 | Round-trip DB tu Python | 115.240 | 1 | |
-| Tong luong bao cao tuan | 2h 52m | 4m 10s | dat SLA 30m |
+| Tong luong bao cao tuan | 2h 52m | 4m 10s | dat SLA 30' |
+
+> So lieu minh hoa - thay bang so chay that truoc khi nop.

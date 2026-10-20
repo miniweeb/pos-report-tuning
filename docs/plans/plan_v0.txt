@@ -1,0 +1,100 @@
+SQL_ID  9fq2kx7m1pd0a, child number 0
+-------------------------------------
+/* BAO CAO CHI TIET GD POS THEO DVCNT - RPT_POS_WEEKLY  Version : V0 */ WITH prm AS (...)
+
+Plan hash value: 3318840127
+
+Peeked Binds (identified by position):
+--------------------------------------
+   1 - :TU_NGAY (DATE): 09/01/2026 00:00:00
+   2 - :DEN_NGAY (DATE): 09/27/2026 00:00:00
+   3 - :CN_ID (VARCHAR2(30), CSID=873): (null)
+   4 - :MID (VARCHAR2(30), CSID=873): (null)
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                                  | Name                         | Starts | E-Rows | A-Rows |   A-Time   | Buffers | Used-Tmp|
+-------------------------------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                           |                              |      1 |        |  2588K |00:41:12.08 |    612M |         |
+|   1 |  TEMP TABLE TRANSFORMATION                 |                              |      1 |        |  2588K |00:41:12.08 |    612M |         |
+|   2 |   LOAD AS SELECT (CURSOR DURATION MEMORY)  | SYS_TEMP_0FD9D6611_8C2A3F1   |      1 |        |      0 |00:01:21.62 |    612K |         |
+|   3 |    PARTITION RANGE ALL                     |                              |      1 |    494 |  2588K |00:01:19.10 |    598K |         |
+|*  4 |     TABLE ACCESS STORAGE FULL              | W4_DOC_FULL                  |     32 |    494 |  2588K |00:01:18.40 |    598K |         |
+|   5 |   LOAD AS SELECT (CURSOR DURATION MEMORY)  | SYS_TEMP_0FD9D6612_8C2A3F1   |      1 |        |      0 |00:33:24.50 |    593M |         |
+|   6 |    SORT AGGREGATE                          |                              |   2588K|      1 |  2588K |00:00:52.30 |    412K |         |
+|*  7 |     VIEW                                   |                              |   2588K|      1 |  2466K |00:00:51.84 |    412K |         |
+|   8 |      SORT UNIQUE                           |                              |      1 |   4291K|   938K |00:00:41.20 |    412K |         |
+|   9 |       UNION-ALL                            |                              |      1 |        |  1102K |00:00:03.10 |    412K |         |
+|* 10 |        TABLE ACCESS STORAGE FULL           | PVOIL_WS_TXN_INQ             |      1 |   2146K|   938K |00:00:02.18 |    409K |         |
+|* 11 |        TABLE ACCESS STORAGE FULL           | PVOIL_WS_TXN_INQ_HIS         |      1 |   2145K|   164K |00:00:00.86 |   3105  |         |
+|  12 |    HASH JOIN RIGHT OUTER                   |                              |      1 |    494 |  2588K |00:32:19.10 |    592M |         |
+|  13 |     VIEW                                   |                              |      1 |   1093K|  1093K |00:00:00.41 |   3912  |         |
+|  14 |     HASH JOIN RIGHT OUTER                  |                              |      1 |    494 |  2588K |00:32:12.40 |    592M |         |
+|  15 |      VIEW                                  |                              |      1 |     15M|    13M |00:09:01.30 |   2141K |         |
+|* 16 |       WINDOW SORT PUSHED RANK              |                              |      1 |     15M|    15M |00:08:59.02 |   2141K |   3134M |
+|* 17 |        TABLE ACCESS STORAGE FULL           | W4_OPT_NAPAS_RECONCILE_TRANS |      1 |     15M|    15M |00:00:52.66 |   2141K |         |
+|  18 |      HASH JOIN RIGHT OUTER                 |                              |      1 |    494 |  2588K |00:23:03.60 |    590M |         |
+|  19 |       VIEW                                 |                              |      1 |   2541K|  2588K |00:00:12.80 |     70K |         |
+|  20 |        HASH GROUP BY                       |                              |      1 |   2541K|  2588K |00:00:12.10 |     70K |         |
+|* 21 |         HASH JOIN RIGHT SEMI               |                              |      1 |   2541K|  2611K |00:00:08.40 |     70K |         |
+|  22 |          TABLE ACCESS STORAGE FULL         | SYS_TEMP_0FD9D6611_8C2A3F1   |      1 |    494 |  2588K |00:00:02.10 |     59K |         |
+|  23 |          MAT_VIEW ACCESS STORAGE FULL      | W4_FEE_YEAR                  |      1 |   5694K|  5694K |00:00:00.54 |  10416  |         |
+|  24 |       NESTED LOOPS OUTER                   |                              |      1 |    494 |  2588K |00:22:46.40 |    590M |         |
+|  25 |        NESTED LOOPS OUTER                  |                              |      1 |    494 |  2588K |00:12:54.10 |    295M |         |
+|  26 |         NESTED LOOPS OUTER                 |                              |      1 |    494 |  2588K |00:00:31.80 |    227K |         |
+|* 27 |          HASH JOIN                         |                              |      1 |    494 |  2588K |00:00:24.06 |     61K |         |
+|* 28 |           TABLE ACCESS STORAGE FULL        | W4_MERCHANT_DAILY            |      1 |  41203 |  41203 |00:00:00.12 |   1906  |         |
+|  29 |           TABLE ACCESS STORAGE FULL        | SYS_TEMP_0FD9D6611_8C2A3F1   |      1 |    494 |  2588K |00:00:02.40 |     59K |         |
+|  30 |          VIEW                              | VW_LAT_C83A4F2E              |   2588K|      1 |    41K |00:00:06.90 |    166K |         |
+|* 31 |           FILTER                           |                              |   2588K|        |    41K |00:00:06.02 |    166K |         |
+|  32 |            TABLE ACCESS BY GLOBAL INDEX ROWID| W4_DOC_FULL                |    41K |      1 |    41K |00:00:05.20 |    166K |         |
+|* 33 |             INDEX UNIQUE SCAN              | W4_DOC_FULL_PK               |    41K |      1 |    41K |00:00:03.10 |     82K |         |
+|  34 |         VIEW                               | VW_LAT_A18161FF              |   2588K|      1 |  2588K |00:12:20.05 |    294M |         |
+|  35 |          NESTED LOOPS                      |                              |   2588K|      1 |  2588K |00:12:16.30 |    294M |         |
+|  36 |           NESTED LOOPS                     |                              |   2588K|      1 |  2588K |00:11:33.20 |    283M |         |
+|  37 |            TABLE ACCESS BY INDEX ROWID BATCHED| W4_ACNT_CONTRACT_DAILY    |   2588K|      1 |  2588K |00:09:47.31 |    198M |         |
+|* 38 |             INDEX RANGE SCAN               | W4_ACNT_CONTRACT_NUMBER      |   2588K|      1 |  2588K |00:06:02.11 |    156M |         |
+|* 39 |            TABLE ACCESS BY INDEX ROWID     | W4_ACNT_CONTRACT_DAILY       |   2588K|      1 |  2588K |00:01:44.20 |     85M |         |
+|* 40 |             INDEX UNIQUE SCAN              | W4_ACNT_CONTRACT_DAILY_PK    |   2588K|      1 |  2588K |00:01:02.40 |     41M |         |
+|* 41 |           INDEX RANGE SCAN                 | W4_APPL_PRODUCT_DAILY_IX2    |   2588K|      1 |  2588K |00:00:41.10 |     11M |         |
+|  42 |        VIEW                                | VW_LAT_B2C7E0D1              |   2588K|      1 |  2471K |00:09:48.02 |    295M |         |
+|  43 |         NESTED LOOPS                       |                              |   2588K|      1 |  2471K |00:09:45.10 |    295M |         |
+|* 44 |          INDEX RANGE SCAN                  | IDX_W4_DEVICE_REC_TID        |   2588K|      1 |  2588K |00:01:12.30 |   5214K |         |
+|* 45 |          TABLE ACCESS BY INDEX ROWID BATCHED| W4_ACQ_DEV_CYCLE_DAILY      |   2588K|      1 |  2471K |00:08:31.54 |    290M |         |
+|* 46 |           INDEX RANGE SCAN                 | W4_ACQ_DEV_CYCLE_DAILY_I1    |   2588K|     12 |    31M |00:05:58.70 |    141M |         |
+|  47 |   SORT ORDER BY                            |                              |      1 |    494 |  2588K |00:06:25.96 |     18M |   1874M |
+|* 48 |    HASH JOIN                               |                              |      1 |    494 |  2588K |00:03:30.10 |     18M |         |
+|  49 |     VIEW                                   |                              |      1 |     12 |  38412 |00:02:15.20 |   9214K |         |
+|  50 |      HASH GROUP BY                         |                              |      1 |     12 |  38412 |00:02:14.60 |   9214K |         |
+|  51 |       TABLE ACCESS STORAGE FULL            | SYS_TEMP_0FD9D6612_8C2A3F1   |      1 |    494 |  2588K |00:01:02.30 |   9214K |         |
+|  52 |     TABLE ACCESS STORAGE FULL              | SYS_TEMP_0FD9D6612_8C2A3F1   |      1 |    494 |  2588K |00:00:58.10 |   9214K |         |
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+   4 - filter((TRUNC(INTERNAL_FUNCTION("A"."GD_DT"))>=:TU_NGAY AND TRUNC(INTERNAL_FUNCTION("A"."GD_DT"))<=:DEN_NGAY
+              AND "A"."STS"='A' AND "A"."RET_CD"=0 AND "A"."SRC_CHNL"='P' AND "A"."IS_AUTH"='N'))
+   7 - filter(("P"."RRN"=:B1 AND "P"."AUTH_CD"=:B2))
+  10 - filter(("B"."VAL_DT">=:TU_NGAY AND "B"."VAL_DT"<=:DEN_NGAY+1))
+  11 - filter(("H"."VAL_DT">=:TU_NGAY AND "H"."VAL_DT"<=:DEN_NGAY+1))
+  16 - filter(ROW_NUMBER() OVER ( PARTITION BY "N"."PAN","N"."TID","N"."AUTH_CD","N"."GD_AMT","N"."DS_DT","N"."DS_HMS"
+              ORDER BY INTERNAL_FUNCTION("N"."TRACE_NO") DESC )<=1)
+  17 - filter("N"."TRACE_NO"<>'999999')
+  21 - access("F"."DOC_ID"="C0")
+  27 - access("D"."MID"="C2")
+  28 - filter(("D"."STS"='A' AND (:CN_ID IS NULL OR SUBSTR("D"."CN_ID",2,3)=:CN_ID)))
+  31 - filter("C14"='R')
+  33 - access("O"."ID"="C13")
+  38 - access("C"."HD_ID"="C5")
+       filter(("C"."STS"='A' AND "C"."HD_CAT"='C' AND "C"."REL_CD"='00'))
+  39 - filter(("T"."STS"='A' AND "T"."HD_CAT"='A'))
+  40 - access("T"."ID"="C"."TK_LK_ID")
+  41 - access("P"."PROD_CD"="C"."PROD_CD" AND "P"."STS"='A')
+       filter(("P"."PROD_CD"<>'LC_CR_V_LT' AND "P"."PROD_CD"<>'LC_CR_V_LT_M'))
+  44 - access("V"."TID"="C4" AND "V"."STS"='A')
+  45 - filter("Y"."CK_ID"="C11")
+  46 - access("Y"."DEV_ID"="V"."ID")
+  48 - access("T"."MID"="C"."MID")
+
+Note
+-----
+   - dynamic statistics used: none

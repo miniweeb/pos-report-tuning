@@ -8,7 +8,7 @@
              GD goc cua GD huy va tong theo DVCNT.
    ===================================================================== */
 WITH
-/* 1. Tham so */
+/* ---------- 1. Tham so ---------- */
 prm AS (
     SELECT :TU_NGAY  AS TU_DT
          , :DEN_NGAY AS DEN_DT
@@ -16,7 +16,7 @@ prm AS (
          , :MID      AS MID
     FROM   DUAL
 ),
-/* 2. GD POS trong ky */
+/* ---------- 2. GD POS trong ky ---------- */
 gd AS (
     SELECT a.ID, a.GD_DT, a.POST_DT, a.MID, a.TID, a.PAN, a.PAN_MASK
          , a.GD_AMT, a.SETTL_AMT, a.CCY, a.AUTH_CD, a.RRN, a.CK_ID
@@ -34,12 +34,12 @@ gd AS (
       AND  a.IS_AUTH  = 'N'
       AND  (prm.MID IS NULL OR a.MID = prm.MID)
 ),
-/* 3. Chi nhanh */
+/* ---------- 3. Chi nhanh ---------- */
 cn AS (
     SELECT c.CN_ID, c.CN_NM, c.VUNG_CD
     FROM   &&SCHEMA..DM_CHI_NHANH c
 ),
-/* 4. DVCNT theo chi nhanh */
+/* ---------- 4. DVCNT theo chi nhanh ---------- */
 dv AS (
     SELECT d.MID, d.MID_NM, d.CN_ID, d.MCC AS MID_MCC
          , cn.CN_NM, cn.VUNG_CD
@@ -49,7 +49,7 @@ dv AS (
     WHERE  d.STS = 'A'
       AND  (prm.CN_ID IS NULL OR SUBSTR(d.CN_ID,2,3) = prm.CN_ID)
 ),
-/* 5. Danh muc */
+/* ---------- 5. Danh muc ---------- */
 dm AS (
     SELECT 'TT'  AS DM_TYPE, TO_CHAR(ID) AS DM_CD, TT_NM  AS DM_NM
     FROM   &&SCHEMA..W4_TRANS_TYPE_DAILY WHERE STS = 'A'
@@ -63,7 +63,7 @@ dm AS (
     SELECT 'MCC', MCC, MCC_NM
     FROM   &&SCHEMA..DM_MCC
 ),
-/* 6. Phi theo chung tu */
+/* ---------- 6. Phi theo chung tu ---------- */
 fee AS (
     SELECT f.DOC_ID
          , SUM(f.FEE_AMT) AS FEE_AMT
@@ -72,7 +72,7 @@ fee AS (
     WHERE  EXISTS (SELECT 1 FROM gd WHERE gd.ID = f.DOC_ID)
     GROUP BY f.DOC_ID
 ),
-/* 7. Doi soat NAPAS, lay ban ghi moi nhat */
+/* ---------- 7. Doi soat NAPAS, lay ban ghi moi nhat ---------- */
 ns AS (
     SELECT PAN, TID, AUTH_CD, GD_AMT, DS_D, DS_HMS, TRACE_NO
     FROM (
@@ -88,7 +88,7 @@ ns AS (
     )
     WHERE RN = 1
 ),
-/* 8. Bao co PVOIL (bang hien tai + lich su) */
+/* ---------- 8. Bao co PVOIL (bang hien tai + lich su) ---------- */
 pv AS (
     SELECT b.RRN, b.AUTH_CD, b.CORE_STL_DT AS BC_DT
     FROM   &&SCHEMA..PVOIL_WS_TXN_INQ b
@@ -100,7 +100,7 @@ pv AS (
     CROSS JOIN prm
     WHERE  h.VAL_DT BETWEEN prm.TU_DT AND prm.DEN_DT + 1
 ),
-/* 9. Ghep chi tiet */
+/* ---------- 9. Ghep chi tiet ---------- */
 rpt AS (
     SELECT g.ID                                       AS DOC_ID
          , g.GD_D                                     AS GD_DT
@@ -176,7 +176,7 @@ rpt AS (
     LEFT JOIN dm bn      ON bn.DM_TYPE  = 'BIN'   AND bn.DM_CD   = TO_CHAR(g.BIN_ID)
     LEFT JOIN dm mc      ON mc.DM_TYPE  = 'MCC'   AND mc.DM_CD   = NVL(g.MCC, dv.MID_MCC)
 ),
-/* 10. Chi so tinh toan */
+/* ---------- 10. Chi so tinh toan ---------- */
 calc AS (
     SELECT r.*
          , TRUNC(r.SETTL_AMT / NULLIF(r.GD_AMT,0))                 AS FX_RATE
@@ -185,7 +185,7 @@ calc AS (
          , r.GD_AMT - ABS(r.FEE_AMT) - ABS(r.VAT_AMT)             AS NET_AMT
     FROM   rpt r
 ),
-/* 11. Tong theo DVCNT */
+/* ---------- 11. Tong theo DVCNT ---------- */
 tong AS (
     SELECT c.MID
          , COUNT(*)       AS SO_GD_DVCNT
@@ -193,7 +193,7 @@ tong AS (
     FROM   calc c
     GROUP BY c.MID
 )
-/* Ket qua */
+/* ---------- Ket qua ---------- */
 SELECT c.DOC_ID, c.GD_DT, c.GD_TIME, c.BC_DT, c.POST_DT
      , c.MID, c.MID_NM, c.CN_ID, c.CN_NM, c.VUNG_CD, c.TID, c.PAN_MASK
      , c.TK_ID, c.CARD_TYPE, c.LO_ID

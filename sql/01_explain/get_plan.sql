@@ -1,5 +1,5 @@
--- Lay plan thuc te
--- 1):
+-- Lay plan thuc te (tuong duong EXPLAIN ANALYZE)
+-- 1) Chay cau truy van voi hint /*+ GATHER_PLAN_STATISTICS */ hoac:
 ALTER SESSION SET statistics_level = ALL;
 -- 2) Lay sql_id vua chay
 SELECT sql_id, child_number, plan_hash_value, ROUND(elapsed_time/1e6) ela_s,

@@ -1,4 +1,4 @@
-"""BAN CU"""
+"""BAN CU."""
 from db import get_conn, SCHEMA
 
 

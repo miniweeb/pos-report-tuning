@@ -1,11 +1,12 @@
-/* V1 - BAO CAO CHI TIET GD POS THEO DVCNT (BAN TOI UU)
+/* =====================================================================
+   V1 - BAO CAO CHI TIET GD POS THEO DVCNT (BAN TOI UU)
    Schema  : &&SCHEMA (da che)
    Binds   : :TU_NGAY, :DEN_NGAY (DATE), :CN_ID, :MID
-   Ket qua : doi chieu o sql/05_reconcile
-   Thay doi so voi V0:
+   Ket qua : giu nguyen so voi V0 (doi chieu o sql/05_reconcile)
+   Thay doi so voi V0 (ket qua giu nguyen):
      1. gd  : TRUNC(GD_DT) BETWEEN -> GD_DT >= :TU AND GD_DT < :DEN + 1
               (cot tran -> partition pruning 32 -> 1)
-     2. hd, ck, gd_goc: OUTER APPLY (chay theo tung dong)
+     2. hd, ck, gd_goc: OUTER APPLY (chay theo tung dong, 2,59M lan)
               -> CTE theo tap tren danh sach khoa k_pan / k_tid / k_goc + hash join
      3. ns  : ROW_NUMBER tren ca bang NAPAS -> cat theo ky truoc khi sort
      4. pv  : UNION (sort khu trung) -> UNION ALL + GROUP BY; scalar subquery
@@ -13,10 +14,11 @@
      5. dm  : so sanh DM_CD (VARCHAR) = GD_TYPE (NUMBER) bi ep kieu ngam
               -> TO_CHAR ve phia GD
      6. dv  : SUBSTR(CN_ID,2,3) -> virtual column CN3_ID co index
-     7. tong: GROUP BY + join lai -> analytic COUNT/SUM OVER (PARTITION BY MID) */
+     7. tong: GROUP BY + join lai -> analytic COUNT/SUM OVER (PARTITION BY MID)
+   ===================================================================== */
 WITH
-/* A. THAM SO */
-/* 1. Tham so ky bao cao */
+/* =============== A. THAM SO =============== */
+/* ---------- 1. Tham so ky bao cao ---------- */
 prm AS (
     SELECT :TU_NGAY      AS TU_DT
          , :DEN_NGAY + 1 AS DEN_DT
@@ -25,8 +27,8 @@ prm AS (
     FROM   DUAL
 ),
 
-/* B. FACT TRONG KY */
-/* 2. GD POS trong ky (co pruning) */
+/* =============== B. FACT TRONG KY =============== */
+/* ---------- 2. GD POS trong ky (co pruning) ---------- */
 gd AS (
     SELECT /*+ NO_MERGE DYNAMIC_SAMPLING(a 4) */
            a.ID, a.GD_DT, a.POST_DT, a.MID, a.TID, a.PAN, a.PAN_MASK
@@ -46,7 +48,7 @@ gd AS (
       AND  a.IS_AUTH  = 'N'
       AND  (prm.MID IS NULL OR a.MID = prm.MID)
 ),
-/* 3. Danh sach khoa can tra cuu (thu hep dim) */
+/* ---------- 3. Danh sach khoa can tra cuu (thu hep dim) ---------- */
 k_pan AS (
     SELECT DISTINCT PAN FROM gd
 ),
@@ -60,13 +62,13 @@ k_goc AS (
       AND  ORIG_DOC_ID IS NOT NULL
 ),
 
-/* C. DIMENSION */
-/* 4. Chi nhanh */
+/* =============== C. DIMENSION =============== */
+/* ---------- 4. Chi nhanh ---------- */
 cn AS (
     SELECT c.CN_ID, c.CN_NM, c.VUNG_CD
     FROM   &&SCHEMA..DM_CHI_NHANH c
 ),
-/* 5. DVCNT theo chi nhanh (virtual column CN3_ID) */
+/* ---------- 5. DVCNT theo chi nhanh (virtual column CN3_ID) ---------- */
 dv AS (
     SELECT d.MID, d.MID_NM, d.CN_ID, d.CN3_ID, d.MCC AS MID_MCC
          , cn.CN_NM, cn.VUNG_CD
@@ -76,7 +78,7 @@ dv AS (
     WHERE  d.STS = 'A'
       AND  (prm.CN_ID IS NULL OR d.CN3_ID = prm.CN_ID)
 ),
-/* 6. The -> tai khoan lien ket -> san pham */
+/* ---------- 6. The -> tai khoan lien ket -> san pham ---------- */
 hd AS (
     SELECT /*+ NO_MERGE LEADING(k c) USE_NL(c) */
            c.HD_ID            AS PAN
@@ -97,7 +99,7 @@ hd AS (
            AND p.STS     = 'A'
            AND p.PROD_CD NOT IN ('LC_CR_V_LT','LC_CR_V_LT_M')
 ),
-/* 7. Chu ky thiet bi -> so lo (index-only I2) */
+/* ---------- 7. Chu ky thiet bi -> so lo (index-only I2) ---------- */
 ck AS (
     SELECT /*+ NO_MERGE */
            k.TID, k.CK_ID, y.LO_ID
@@ -109,7 +111,7 @@ ck AS (
            ON  y.DEV_ID = v.ID
            AND y.CK_ID  = k.CK_ID
 ),
-/* 8. Danh muc nho gop 1 CTE */
+/* ---------- 8. Danh muc nho gop 1 CTE ---------- */
 dm AS (
     SELECT 'TT'  AS DM_TYPE, TO_CHAR(ID) AS DM_CD, TT_NM  AS DM_NM
     FROM   &&SCHEMA..W4_TRANS_TYPE_DAILY WHERE STS = 'A'
@@ -124,8 +126,8 @@ dm AS (
     FROM   &&SCHEMA..DM_MCC
 ),
 
-/* D. DU LIEU DOI SOAT / PHI */
-/* 9. Phi theo chung tu (chi chung tu trong ky) */
+/* =============== D. DU LIEU DOI SOAT / PHI =============== */
+/* ---------- 9. Phi theo chung tu (chi chung tu trong ky) ---------- */
 fee AS (
     SELECT /*+ USE_HASH(f) */
            f.DOC_ID
@@ -135,7 +137,7 @@ fee AS (
     WHERE  EXISTS (SELECT 1 FROM gd WHERE gd.ID = f.DOC_ID)
     GROUP BY f.DOC_ID
 ),
-/* 10. Doi soat NAPAS trong ky, khu trung */
+/* ---------- 10. Doi soat NAPAS trong ky, khu trung ---------- */
 ns AS (
     SELECT PAN, TID, AUTH_CD, GD_AMT, DS_D, DS_HMS, TRACE_NO
     FROM (
@@ -154,7 +156,7 @@ ns AS (
     )
     WHERE RN = 1
 ),
-/* 11. Bao co PVOIL trong ky (bang hien tai + lich su) */
+/* ---------- 11. Bao co PVOIL trong ky (bang hien tai + lich su) ---------- */
 pv_raw AS (
     SELECT b.RRN, b.AUTH_CD, b.CORE_STL_DT
     FROM   &&SCHEMA..PVOIL_WS_TXN_INQ b
@@ -173,7 +175,7 @@ pv AS (
     FROM   pv_raw
     GROUP BY RRN, AUTH_CD
 ),
-/* 12. GD goc cua giao dich huy (1 join thay 2 subquery) */
+/* ---------- 12. GD goc cua giao dich huy (1 join thay 2 subquery) ---------- */
 gd_goc AS (
     SELECT /*+ LEADING(k) USE_NL(o) */
            k.DOC_ID
@@ -184,8 +186,8 @@ gd_goc AS (
            ON o.ID = k.ORIG_DOC_ID
 ),
 
-/* E. GHEP + TINH TOAN */
-/* 13. Ghep chi tiet */
+/* =============== E. GHEP + TINH TOAN =============== */
+/* ---------- 13. Ghep chi tiet ---------- */
 rpt AS (
     SELECT /*+ LEADING(g dv) USE_HASH(dv)
                USE_HASH(ns) SWAP_JOIN_INPUTS(ns)
@@ -234,7 +236,7 @@ rpt AS (
     LEFT JOIN dm bn      ON bn.DM_TYPE  = 'BIN'   AND bn.DM_CD   = TO_CHAR(g.BIN_ID)
     LEFT JOIN dm mc      ON mc.DM_TYPE  = 'MCC'   AND mc.DM_CD   = NVL(g.MCC, dv.MID_MCC)
 ),
-/* 14. Chi so tinh toan */
+/* ---------- 14. Chi so tinh toan ---------- */
 calc AS (
     SELECT r.*
          , TRUNC(r.SETTL_AMT / NULLIF(r.GD_AMT,0))                 AS FX_RATE
@@ -243,14 +245,14 @@ calc AS (
          , r.GD_AMT - ABS(r.FEE_AMT) - ABS(r.VAT_AMT)             AS NET_AMT
     FROM   rpt r
 ),
-/* 15. Tong theo DVCNT bang analytic (khong GROUP BY + join lai) */
+/* ---------- 15. Tong theo DVCNT bang analytic (khong GROUP BY + join lai) ---------- */
 fin AS (
     SELECT c.*
          , COUNT(*)        OVER (PARTITION BY c.MID) AS SO_GD_DVCNT
          , SUM(c.GD_AMT)   OVER (PARTITION BY c.MID) AS TOT_AMT_DVCNT
     FROM   calc c
 )
-/* F. KET QUA */
+/* =============== F. KET QUA =============== */
 SELECT f.DOC_ID, f.GD_DT, f.GD_TIME, f.BC_DT, f.POST_DT
      , f.MID, f.MID_NM, f.CN_ID, f.CN_NM, f.VUNG_CD, f.TID, f.PAN_MASK
      , f.TK_ID, f.CARD_TYPE, f.LO_ID

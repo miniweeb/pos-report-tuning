@@ -1,0 +1,131 @@
+SQL_ID  4k8mzt2v7qg1c, child number 0
+-------------------------------------
+/* BAO CAO CHI TIET GD POS THEO DVCNT (BAN TOI UU)  V1 */ WITH prm AS (...)
+
+Plan hash value: 2971046385
+
+Peeked Binds (identified by position):
+--------------------------------------
+   1 - :TU_NGAY (DATE): 09/01/2026 00:00:00
+   2 - :DEN_NGAY (DATE): 09/27/2026 00:00:00
+   3 - :CN_ID (VARCHAR2(30), CSID=873): (null)
+   4 - :MID (VARCHAR2(30), CSID=873): (null)
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                                     | Name                         | Starts | E-Rows | A-Rows |   A-Time   | Buffers | Pstart| Pstop |
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                              |                              |      1 |        |  2588K |00:01:55.39 |     23M |       |       |
+|   1 |  TEMP TABLE TRANSFORMATION                    |                              |      1 |        |  2588K |00:01:55.39 |     23M |       |       |
+|   2 |   LOAD AS SELECT (CURSOR DURATION MEMORY)     | SYS_TEMP_0FD9D66A1_8C2A3F1   |      1 |        |      0 |00:00:12.40 |    527K |       |       |
+|   3 |    PARTITION RANGE ITERATOR                   |                              |      1 |   2541K|  2588K |00:00:10.11 |    525K |   KEY |   KEY |
+|*  4 |     TABLE ACCESS STORAGE FULL                 | W4_DOC_FULL                  |      1 |   2541K|  2588K |00:00:09.43 |    525K |   KEY |   KEY |
+|   5 |   LOAD AS SELECT (CURSOR DURATION MEMORY)     | SYS_TEMP_0FD9D66A2_8C2A3F1   |      1 |        |      0 |00:00:00.62 |   3912  |       |       |
+|   6 |    UNION-ALL                                  |                              |      1 |        |  1093K |00:00:00.58 |   3912  |       |       |
+|*  7 |     TABLE ACCESS STORAGE FULL                 | W4_TRANS_TYPE_DAILY          |      1 |    613 |    613 |00:00:00.01 |     38  |       |       |
+|*  8 |     TABLE ACCESS STORAGE FULL                 | W4_CURRENCY_DAILY            |      1 |    218 |    218 |00:00:00.01 |     18  |       |       |
+|   9 |     TABLE ACCESS STORAGE FULL                 | W4_BIN_TABLE_V               |      1 |   1091K|  1091K |00:00:00.23 |   3804  |       |       |
+|  10 |     TABLE ACCESS STORAGE FULL                 | DM_MCC                       |      1 |    981 |    981 |00:00:00.01 |     52  |       |       |
+|  11 |   WINDOW SORT                                 |                              |      1 |   2541K|  2588K |00:01:42.37 |     23M |       |       |
+|* 12 |    HASH JOIN RIGHT OUTER                      |                              |      1 |   2541K|  2588K |00:01:37.10 |     23M |       |       |
+|  13 |     TABLE ACCESS STORAGE FULL                 | SYS_TEMP_0FD9D66A2_8C2A3F1   |      1 |   1093K|  1093K |00:00:00.20 |   3912  |       |       |
+|* 14 |     HASH JOIN RIGHT OUTER                     |                              |      1 |   2541K|  2588K |00:01:36.40 |     23M |       |       |
+|  15 |      TABLE ACCESS STORAGE FULL                | SYS_TEMP_0FD9D66A2_8C2A3F1   |      1 |   1093K|  1093K |00:00:00.20 |   3912  |       |       |
+|* 16 |      HASH JOIN RIGHT OUTER                    |                              |      1 |   2541K|  2588K |00:01:35.70 |     23M |       |       |
+|  17 |       TABLE ACCESS STORAGE FULL               | SYS_TEMP_0FD9D66A2_8C2A3F1   |      1 |   1093K|  1093K |00:00:00.20 |   3912  |       |       |
+|* 18 |       HASH JOIN RIGHT OUTER                   |                              |      1 |   2541K|  2588K |00:01:35.00 |     23M |       |       |
+|  19 |        TABLE ACCESS STORAGE FULL              | SYS_TEMP_0FD9D66A2_8C2A3F1   |      1 |   1093K|  1093K |00:00:00.20 |   3912  |       |       |
+|* 20 |        HASH JOIN RIGHT OUTER                  |                              |      1 |   2541K|  2588K |00:01:34.20 |     23M |       |       |
+|  21 |         VIEW                                  |                              |      1 |    951K|   938K |00:00:05.00 |    412K |       |       |
+|  22 |          HASH GROUP BY                        |                              |      1 |    951K|   938K |00:00:04.90 |    412K |       |       |
+|  23 |           VIEW                                |                              |      1 |   1120K|  1102K |00:00:03.20 |    412K |       |       |
+|  24 |            UNION-ALL                          |                              |      1 |        |  1102K |00:00:03.10 |    412K |       |       |
+|* 25 |             TABLE ACCESS STORAGE FULL         | PVOIL_WS_TXN_INQ             |      1 |    955K|   938K |00:00:02.18 |    409K |       |       |
+|* 26 |             TABLE ACCESS STORAGE FULL         | PVOIL_WS_TXN_INQ_HIS         |      1 |    165K|   164K |00:00:00.86 |   3105  |       |       |
+|* 27 |         HASH JOIN RIGHT OUTER                 |                              |      1 |   2541K|  2588K |00:01:27.50 |     22M |       |       |
+|  28 |          VIEW                                 |                              |      1 |    655K|   714K |00:00:11.95 |    163K |       |       |
+|* 29 |           WINDOW SORT PUSHED RANK             |                              |      1 |    655K|   714K |00:00:11.80 |    163K |       |       |
+|* 30 |            TABLE ACCESS STORAGE FULL          | W4_OPT_NAPAS_RECONCILE_TRANS |      1 |    655K|   714K |00:00:08.26 |    163K |       |       |
+|* 31 |          HASH JOIN RIGHT OUTER                |                              |      1 |   2541K|  2588K |00:01:12.90 |     22M |       |       |
+|  32 |           VIEW                                |                              |      1 |  40870 |  41205 |00:00:04.00 |    225K |       |       |
+|  33 |            NESTED LOOPS                       |                              |      1 |  40870 |  41205 |00:00:03.90 |    225K |       |       |
+|* 34 |             TABLE ACCESS STORAGE FULL         | SYS_TEMP_0FD9D66A1_8C2A3F1   |      1 |  40870 |  41205 |00:00:01.90 |     59K |       |       |
+|  35 |             TABLE ACCESS BY GLOBAL INDEX ROWID| W4_DOC_FULL                  |  41205 |      1 |  41205 |00:00:01.80 |    166K | ROWID | ROWID |
+|* 36 |              INDEX UNIQUE SCAN                | W4_DOC_FULL_PK               |  41205 |      1 |  41205 |00:00:00.90 |     82K |       |       |
+|* 37 |           HASH JOIN RIGHT OUTER               |                              |      1 |   2541K|  2588K |00:01:07.40 |     22M |       |       |
+|  38 |            VIEW                               |                              |      1 |   2541K|  2588K |00:00:09.80 |     70K |       |       |
+|  39 |             HASH GROUP BY                     |                              |      1 |   2541K|  2588K |00:00:09.20 |     70K |       |       |
+|* 40 |              HASH JOIN RIGHT SEMI             |                              |      1 |   2541K|  2611K |00:00:06.40 |     70K |       |       |
+|  41 |               TABLE ACCESS STORAGE FULL       | SYS_TEMP_0FD9D66A1_8C2A3F1   |      1 |   2541K|  2588K |00:00:02.10 |     59K |       |       |
+|  42 |               MAT_VIEW ACCESS STORAGE FULL    | W4_FEE_YEAR                  |      1 |   5694K|  5694K |00:00:00.54 |  10416  |       |       |
+|* 43 |            HASH JOIN RIGHT OUTER              |                              |      1 |   2541K|  2588K |00:00:55.20 |     22M |       |       |
+|  44 |             VIEW                              |                              |      1 |    405K|   398K |00:00:13.40 |   2660K |       |       |
+|  45 |              NESTED LOOPS                     |                              |      1 |    405K|   398K |00:00:13.30 |   2660K |       |       |
+|  46 |               NESTED LOOPS                    |                              |      1 |    412K|   412K |00:00:08.10 |   1300K |       |       |
+|  47 |                VIEW                           |                              |      1 |    410K|   412K |00:00:03.20 |     59K |       |       |
+|  48 |                 HASH UNIQUE                   |                              |      1 |    410K|   412K |00:00:03.10 |     59K |       |       |
+|  49 |                  TABLE ACCESS STORAGE FULL    | SYS_TEMP_0FD9D66A1_8C2A3F1   |      1 |   2541K|  2588K |00:00:01.80 |     59K |       |       |
+|* 50 |                INDEX RANGE SCAN               | IDX_W4_DEVICE_REC_TID        |   412K |      1 |   412K |00:00:04.60 |   1241K |       |       |
+|* 51 |               INDEX RANGE SCAN                | W4_ACQ_DEV_CYCLE_DAILY_I2    |   412K |      1 |   398K |00:00:05.00 |   1360K |       |       |
+|* 52 |             HASH JOIN RIGHT OUTER             |                              |      1 |   2541K|  2588K |00:00:38.60 |     19M |       |       |
+|  53 |              VIEW                             |                              |      1 |   1366K|  1380K |00:00:29.20 |     19M |       |       |
+|  54 |               NESTED LOOPS                    |                              |      1 |   1366K|  1380K |00:00:28.90 |     19M |       |       |
+|  55 |                NESTED LOOPS                   |                              |      1 |   1366K|  1380K |00:00:27.10 |     18M |       |       |
+|  56 |                 NESTED LOOPS                  |                              |      1 |   1366K|  1380K |00:00:22.70 |     11M |       |       |
+|  57 |                  VIEW                         |                              |      1 |   1366K|  1380K |00:00:03.95 |     59K |       |       |
+|  58 |                   HASH UNIQUE                 |                              |      1 |   1366K|  1380K |00:00:03.80 |     59K |       |       |
+|  59 |                    TABLE ACCESS STORAGE FULL  | SYS_TEMP_0FD9D66A1_8C2A3F1   |      1 |   2541K|  2588K |00:00:01.90 |     59K |       |       |
+|* 60 |                  TABLE ACCESS BY INDEX ROWID BATCHED| W4_ACNT_CONTRACT_DAILY |   1380K|      1 |  1380K |00:00:20.90 |     11M |       |       |
+|* 61 |                   INDEX RANGE SCAN            | W4_ACNT_CONTRACT_NUMBER      |   1380K|      1 |  1380K |00:00:13.80 |   6912K |       |       |
+|* 62 |                 TABLE ACCESS BY INDEX ROWID   | W4_ACNT_CONTRACT_DAILY       |   1380K|      1 |  1380K |00:00:05.20 |   7020K |       |       |
+|* 63 |                  INDEX UNIQUE SCAN            | W4_ACNT_CONTRACT_DAILY_PK    |   1380K|      1 |  1380K |00:00:03.10 |   4140K |       |       |
+|* 64 |                INDEX RANGE SCAN               | W4_APPL_PRODUCT_DAILY_IX2    |   1380K|      1 |  1380K |00:00:01.60 |   1496K |       |       |
+|* 65 |              HASH JOIN                        |                              |      1 |   2541K|  2588K |00:00:05.10 |     61K |       |       |
+|* 66 |               HASH JOIN RIGHT OUTER           |                              |      1 |  41203 |  41203 |00:00:00.30 |   2026  |       |       |
+|  67 |                TABLE ACCESS STORAGE FULL      | DM_CHI_NHANH                 |      1 |    120 |    120 |00:00:00.01 |    120  |       |       |
+|* 68 |                TABLE ACCESS STORAGE FULL      | W4_MERCHANT_DAILY            |      1 |  41203 |  41203 |00:00:00.12 |   1906  |       |       |
+|  69 |               TABLE ACCESS STORAGE FULL       | SYS_TEMP_0FD9D66A1_8C2A3F1   |      1 |   2541K|  2588K |00:00:02.40 |     59K |       |       |
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+   4 - storage(("A"."GD_DT">=:TU_NGAY AND "A"."GD_DT"<:DEN_NGAY+1 AND "A"."STS"='A' AND "A"."RET_CD"=0
+              AND "A"."SRC_CHNL"='P' AND "A"."IS_AUTH"='N'))
+       filter(("A"."GD_DT">=:TU_NGAY AND "A"."GD_DT"<:DEN_NGAY+1 AND ...))
+   7 - storage("STS"='A')
+   8 - storage("STS"='A')
+  12 - access("MC"."DM_CD"=NVL("G"."MCC","DV"."MID_MCC") AND "MC"."DM_TYPE"='MCC')
+  14 - access("BN"."DM_CD"=TO_CHAR("G"."BIN_ID") AND "BN"."DM_TYPE"='BIN')
+  16 - access("CY"."DM_CD"="G"."CCY" AND "CY"."DM_TYPE"='CCY')
+  18 - access("TT"."DM_CD"=TO_CHAR("G"."GD_TYPE") AND "TT"."DM_TYPE"='TT')
+  20 - access("PV"."RRN"="G"."RRN" AND "PV"."AUTH_CD"="G"."AUTH_CD")
+  25 - storage(("B"."VAL_DT">=:TU_NGAY AND "B"."VAL_DT"<:DEN_NGAY+1))
+  26 - storage(("H"."VAL_DT">=:TU_NGAY AND "H"."VAL_DT"<:DEN_NGAY+1))
+  27 - access("NS"."PAN"="G"."PAN" AND "NS"."TID"="G"."TID" AND "NS"."AUTH_CD"="G"."AUTH_CD"
+              AND "NS"."GD_AMT"="G"."GD_AMT" AND "NS"."DS_D"="G"."GD_D" AND "NS"."DS_HMS"="G"."GD_HMS")
+  29 - filter(ROW_NUMBER() OVER ( PARTITION BY "N"."PAN","N"."TID","N"."AUTH_CD","N"."GD_AMT","N"."DS_DT","N"."DS_HMS"
+              ORDER BY INTERNAL_FUNCTION("N"."TRACE_NO") DESC )<=1)
+  30 - storage(("N"."DS_DT">=:TU_NGAY AND "N"."DS_DT"<:DEN_NGAY+1 AND "N"."TRACE_NO"<>'999999'))
+  31 - access("GG"."DOC_ID"="G"."ID")
+  34 - storage(("C0" IS NOT NULL AND "C13"='R'))
+  36 - access("O"."ID"="K"."ORIG_DOC_ID")
+  37 - access("FEE"."DOC_ID"="G"."ID")
+  40 - access("F"."DOC_ID"="GD"."ID")
+  43 - access("CK"."TID"="G"."TID" AND "CK"."CK_ID"="G"."CK_ID")
+  50 - access("V"."TID"="K"."TID" AND "V"."STS"='A')
+  51 - access("Y"."DEV_ID"="V"."ID" AND "Y"."CK_ID"="K"."CK_ID")
+  52 - access("HD"."PAN"="G"."PAN")
+  60 - filter(("C"."STS"='A' AND "C"."HD_CAT"='C' AND "C"."REL_CD"='00'))
+  61 - access("C"."HD_ID"="K"."PAN")
+  62 - filter(("T"."STS"='A' AND "T"."HD_CAT"='A'))
+  63 - access("T"."ID"="C"."TK_LK_ID")
+  64 - access("P"."PROD_CD"="C"."PROD_CD" AND "P"."STS"='A')
+       filter(("P"."PROD_CD"<>'LC_CR_V_LT' AND "P"."PROD_CD"<>'LC_CR_V_LT_M'))
+  65 - access("DV"."MID"="G"."MID")
+  66 - access("CN"."CN_ID"="D"."CN_ID")
+  68 - storage("D"."STS"='A')
+       filter(("D"."STS"='A' AND (:CN_ID IS NULL OR "D"."CN3_ID"=:CN_ID)))
+
+Note
+-----
+   - dynamic statistics used: dynamic sampling (level=4)
+   - 2 Sql Plan Directives used for this statement
