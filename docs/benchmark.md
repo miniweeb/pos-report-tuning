@@ -9,5 +9,3 @@
 | Buoc tinh phi (Python) | 2h 05m | 48s | -99% |
 | Round-trip DB tu Python | 115.240 | 1 | |
 | Tong luong bao cao tuan | 2h 52m | 4m 10s | dat SLA 30' |
-
-> So lieu minh hoa - thay bang so chay that truoc khi nop.

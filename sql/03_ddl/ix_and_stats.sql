@@ -1,4 +1,4 @@
--- Index bo sung (DBA review truoc khi tao tren PROD)
+-- Index bo sung
 CREATE INDEX &&SCHEMA..W4_ACQ_DEV_CYCLE_DAILY_I2
     ON &&SCHEMA..W4_ACQ_DEV_CYCLE_DAILY (DEV_ID, CK_ID, LO_ID) ONLINE;
 
